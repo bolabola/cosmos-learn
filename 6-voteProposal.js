@@ -5,6 +5,8 @@ import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 import fs from "fs";
 import SigningClient from "./utils/SigningClient.js";
 import { getSigner } from "./utils/helpers.js";
+import { wallet } from "./wallet.js"
+import { decrypt } from "./utils/crypto.js";
 
 const loadJSON = (path) => JSON.parse(fs.readFileSync(new URL(path, import.meta.url)));
 const chainsMap = loadJSON('./assets/chains.json');
@@ -81,4 +83,23 @@ const mnemonicOrKey = 'Put mnemonic or private key here';
 const proposalId = 1; //Proposal ID
 const option = 1; //Option: 0-No, 1-Yes
 
-start(chainsMap[chainName], mnemonicOrKey, proposalId, option);
+//start(chainsMap[chainName], mnemonicOrKey, proposalId, option);
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const args = process.argv.slice(2);
+const key = args[0]
+const iv = args[1]
+
+for (const v of wallet) {
+    const mnemonicOrKey = decrypt(v, key, iv)
+    try {
+        await delay(300)
+        start(chainsMap[chainName], mnemonicOrKey, proposalId, option);
+
+    } catch (error) {
+        console.log(error)
+    }
+}

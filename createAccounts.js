@@ -1,6 +1,10 @@
 import { Secp256k1HdWallet,makeCosmoshubPath } from "@cosmjs/amino";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import {createInterface} from "readline";
+import fs from "fs";
+import rl from 'readline-sync';
+
+import { wallet } from "./wallet.js"
 async function walletGenerate() {
     let wallet = await Secp256k1HdWallet.generate(24);
     return wallet.secret.data;
@@ -45,3 +49,16 @@ readline.question("How many wallets do you want to create:\n", async(input) => {
     process.exit()
       
   });
+
+// for (const v of wallet) {
+//     try {
+
+//         let wallet = await getWalletWithAccountSize(v, 1, 'cosmos');
+//         let accounts = await wallet.getAccounts();
+//         const data = `${v},${accounts[0].address}`;
+//         fs.appendFile('1.csv', data + '\n', (err) => { if (err) throw err; })
+//         console.log(data)
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
