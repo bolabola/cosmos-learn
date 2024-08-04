@@ -3,6 +3,7 @@ import {
 
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
+import fs from "fs";
 
 async function getQueryClient (rpcEndpoint) {
     const tendermint34Client = await Tendermint34Client.connect(rpcEndpoint);
@@ -23,4 +24,13 @@ async function start (address) {
 
 }
 const address = '';//enter cosmos address
-start(address);
+//start(address);
+
+const results = fs.readFileSync('./wallet.txt', 'utf-8')
+    .split(/\r?\n/)
+    .filter(line => line.trim()) // 过滤掉空行
+    .map(line => line.trim());
+
+for (const v of results) {
+   await start( v);
+}

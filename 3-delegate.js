@@ -6,7 +6,7 @@ import fs from "fs";
 import SigningClient from "./utils/SigningClient.js";
 import { coin } from '@cosmjs/launchpad';
 import { getSigner } from "./utils/helpers.js";
-
+import { decrypt } from "./crypto.js";
 const loadJSON = (path) => JSON.parse(fs.readFileSync(new URL(path, import.meta.url)));
 const chainsMap = loadJSON('./assets/chains.json');
 
@@ -68,8 +68,19 @@ async function start(chain, mnemonicOrKey, validatorAddress, delegationAmount) {
 
 const chainName = 'cosmos'; //Get the chain name from the chains.json
 const mnemonicOrKey = 'Put mnemonic or private key here';
-const validatorAddress = ''; //Validator address
-const delegationAmount = 1; //Delegation amount
+const validatorAddress = 'cosmosvaloper1hmd535f69t3x262m6s9wc6jd0dmel2zevhyuhm'; //Validator address
+const delegationAmount = 0.01; //Delegation amount
 
-start(chainsMap[chainName], mnemonicOrKey, validatorAddress, delegationAmount);
+//start(chainsMap[chainName], mnemonicOrKey, validatorAddress, delegationAmount);
 
+const args = process.argv.slice(2);
+
+
+const results = fs.readFileSync('./wallet.txt', 'utf-8')
+    .split(/\r?\n/)
+    .filter(line => line.trim()) // 过滤掉空行
+    .map(line => line.trim());
+
+for (const v of results) {
+   await start(chainsMap[chainName], decrypt(v,args[0],args[1]), validatorAddress, delegationAmount);       
+}
